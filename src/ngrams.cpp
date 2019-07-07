@@ -8,12 +8,12 @@
 using namespace std;
 
 void printIntroduction();
-void promptFoFile(Map<Queue<string>, vector<string> >& map);
+void promptForFile(Map<Queue<string>, vector<string> >& map);
 
 int main() {
     printIntroduction();
     Map<Queue<string>, vector<string> > map;
-    promptFoFile(map);
+    promptForFile(map);
     cout << "Exiting." << endl;
     return 0;
 }
@@ -26,7 +26,7 @@ void printIntroduction() {
     cout << endl;
 }
 
-void promptFoFile(Map<Queue<string>, vector<string> >& map) {
+void promptForFile(Map<Queue<string>, vector<string> >& map) {
     ifstream file;
     promptUserForFile(file, "Input file name? ");
     int n = 0;
@@ -38,6 +38,6 @@ void promptFoFile(Map<Queue<string>, vector<string> >& map) {
     }
     string word;
     while (file >> word) {
-        cout << word << endl;
+
     }
 }
