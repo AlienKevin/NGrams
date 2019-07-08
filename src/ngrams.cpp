@@ -89,15 +89,17 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
 }
 
 void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& map) {
-    int numberOfWords = getInteger("# of random words to generate (0 to quit)? ");
-    while (numberOfWords < n) {
-        if (numberOfWords == 0) { // quit
-            return;
+    while (true) {
+        int numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
+        while (numberOfWords < n) {
+            if (numberOfWords == 0) { // quit
+                return;
+            }
+            cout << "N must be " << n << " or greater." << endl;
+            numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         }
-        cout << "N must be " << n << " or greater." << endl;
-        numberOfWords = getInteger("# of random words to generate (0 to quit)? ");
+        generateRandomText(numberOfWords, n, map);
     }
-    generateRandomText(numberOfWords, n, map);
 }
 
 void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vector<string> >& map) {
@@ -116,5 +118,5 @@ void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vecto
         randomKey.enqueue(randomValue);
         output += randomValue + " ";
     }
-    cout << output << endl;
+    cout << "... " << output << "..." << endl;
 }
