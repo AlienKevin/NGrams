@@ -19,16 +19,17 @@
 using namespace std;
 
 void printIntroduction();
-void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map);
-void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& map);
-void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vector<string> >& map);
+void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<Queue<string>, Vector<string> >& map);
+void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map);
+void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map);
 
 int main() {
     printIntroduction();
     Map<Queue<string>, Vector<string> > map;
     int n;
-    promptForFile(n, map);
-    promptForNumberOfWords(n, map);
+    Vector<Queue<string> > startOfSentencePrefixes;
+    promptForFile(n,startOfSentencePrefixes, map);
+    promptForNumberOfWords(n, startOfSentencePrefixes, map);
     cout << "Exiting." << endl;
     return 0;
 }
@@ -49,7 +50,7 @@ void printIntroduction() {
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
+void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<Queue<string>, Vector<string> >& map) {
     ifstream file;
     promptUserForFile(file, "Input file name? ");
     n = 0;
@@ -81,6 +82,11 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
         }
         if (window.size() == n) {
             prefixes = window;
+            // isupper function
+            // http://www.cplusplus.com/reference/cctype/isupper/
+            if (isupper(prefixes.peek()[0])) { // first letter is uppercase
+                startOfSentencePrefixes.add(prefixes);
+            }
             map[prefixes].add(word);
             window.dequeue();
         }
@@ -93,6 +99,9 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
         word = edgeWordList[i];
         if (window.size() == n) {
             prefixes = window;
+            if (isupper(prefixes.peek()[0])) { // first letter is uppercase
+                startOfSentencePrefixes.add(prefixes);
+            }
             map[prefixes].add(word);
             window.dequeue();
         }
@@ -105,7 +114,7 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& map) {
+void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map) {
     while (true) {
         int numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         while (numberOfWords < n) {
@@ -115,7 +124,7 @@ void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& ma
             cout << "Must be at least " << n << " words." << endl;
             numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         }
-        generateRandomText(numberOfWords, n, map);
+        generateRandomText(numberOfWords, n, startOfSentencePrefixes, map);
     }
 }
 
@@ -125,10 +134,9 @@ void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& ma
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vector<string> >& map) {
+void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map) {
     string output = "";
-    int randomKeyIndex = randomInteger(0, map.size() - 1);
-    Queue<string> randomKey = map.keys()[randomKeyIndex];
+    Queue<string> randomKey = randomElement(startOfSentencePrefixes);
     Queue<string> copyOfRandomKey = randomKey;
     while (!copyOfRandomKey.isEmpty()) {
         output += copyOfRandomKey.dequeue() + " ";
