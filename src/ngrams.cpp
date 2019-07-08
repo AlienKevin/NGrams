@@ -1,3 +1,13 @@
+/**
+ * NGrams assignment for CS106B at Stanford Summer Session.
+ * Author: Kevin Li
+ * Description: Randomly generate a new text in an author's writing style.
+ * This program generates a map of prefixes to suffixes and use it to create
+ * weighted random generation of texts.
+ * Citations:
+ * point istream back to beginning of file
+ * https://bytes.com/topic/c/answers/881293-reading-file-multiple-times
+ */
 #include <iostream>
 #include "console.h"
 #include "filelib.h"
@@ -23,6 +33,9 @@ int main() {
     return 0;
 }
 
+/**
+ * @brief Print introduction text.
+ */
 void printIntroduction() {
     cout << "Welcome to CS 106B/X Random Writer ('N-Grams')!" << endl;
     cout << "This program generates random text based on a document." << endl;
@@ -31,6 +44,11 @@ void printIntroduction() {
     cout << endl;
 }
 
+/**
+ * @brief Prompt user for input file and n value and construct a map of prefixes to suffixes.
+ * @param n the size of grams to use, high n means more prefixes
+ * @param map the map used to store prefixes to suffixes
+ */
 void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
     ifstream file;
     promptUserForFile(file, "Input file name? ");
@@ -47,8 +65,6 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
         totalWords ++;
     }
 
-    // point istream back to beginning of file
-    // https://bytes.com/topic/c/answers/881293-reading-file-multiple-times
     file.clear();
     file.seekg(0, ios::beg);
 
@@ -84,6 +100,11 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
     }
 }
 
+/**
+ * @brief Prompt user for number of words they want to randomly generate.
+ * @param n the size of grams to use, high n means more prefixes
+ * @param map the map used to store prefixes to suffixes
+ */
 void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& map) {
     while (true) {
         int numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
@@ -98,6 +119,12 @@ void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& ma
     }
 }
 
+/**
+ * @brief Generate random texts based on the number of words and the map of prefixes to suffixes.
+ * @param numberOfWords the number of words to generate, must be >= n
+ * @param n the size of grams to use, high n means more prefixes
+ * @param map the map used to store prefixes to suffixes
+ */
 void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vector<string> >& map) {
     string output = "";
     int randomKeyIndex = randomInteger(0, map.size() - 1);
