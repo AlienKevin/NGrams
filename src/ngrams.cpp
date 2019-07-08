@@ -65,7 +65,6 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
         }
         if (window.size() == n) {
             prefixes = window;
-//            cout << prefixes << endl;
             map[prefixes].add(word);
             window.dequeue();
         }
@@ -74,18 +73,15 @@ void promptForFile(int& n, Map<Queue<string>, Vector<string> >& map) {
     }
     file.close();
     Vector<string> edgeWordList = backWordList + frontWordList;
-//    cout << edgeWordList << endl;
     for (int i = n; i < edgeWordList.size(); i++) {
         word = edgeWordList[i];
         if (window.size() == n) {
             prefixes = window;
-//            cout << prefixes << endl;
             map[prefixes].add(word);
             window.dequeue();
         }
         window.enqueue(word);
     }
-//    cout << map << endl;
 }
 
 void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& map) {
@@ -106,12 +102,10 @@ void generateRandomText(int numberOfWords, int n, const Map<Queue<string>, Vecto
     string output = "";
     int randomKeyIndex = randomInteger(0, map.size() - 1);
     Queue<string> randomKey = map.keys()[randomKeyIndex];
-//    cout << randomKey << endl;
     Queue<string> copyOfRandomKey = randomKey;
     while (!copyOfRandomKey.isEmpty()) {
         output += copyOfRandomKey.dequeue() + " ";
     }
-//    cout << output << endl;
     for (int i = 0; i < numberOfWords - n; i++) {
         string randomValue = randomElement(map[randomKey]);
         randomKey.dequeue();
