@@ -19,17 +19,19 @@
 using namespace std;
 
 void printIntroduction();
-void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<Queue<string>, Vector<string> >& map);
-void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map);
-void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map);
+void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, bool& hasEndPunctuations, Map<Queue<string>, Vector<string> >& map);
+void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, bool hasEndPunctuations, const Map<Queue<string>, Vector<string> >& map);
+void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, bool hasEndPunctuations, const Map<Queue<string>, Vector<string> >& map);
+bool isEndPunctuation(char ch);
 
 int main() {
     printIntroduction();
     Map<Queue<string>, Vector<string> > map;
     int n;
     Vector<Queue<string> > startOfSentencePrefixes;
-    promptForFile(n,startOfSentencePrefixes, map);
-    promptForNumberOfWords(n, startOfSentencePrefixes, map);
+    bool hasEndPunctuations = false; // default to not have end punctuations
+    promptForFile(n, startOfSentencePrefixes, hasEndPunctuations, map);
+    promptForNumberOfWords(n, startOfSentencePrefixes, hasEndPunctuations, map);
     cout << "Exiting." << endl;
     return 0;
 }
@@ -50,7 +52,7 @@ void printIntroduction() {
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<Queue<string>, Vector<string> >& map) {
+void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, bool& hasEndPunctuations, Map<Queue<string>, Vector<string> >& map) {
     ifstream file;
     promptUserForFile(file, "Input file name? ");
     n = 0;
@@ -75,6 +77,9 @@ void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<
     Vector<string> frontWordList;
     Vector<string> backWordList;
     while (file >> word) {
+        if (isEndPunctuation(word[word.size() - 1])) {
+            hasEndPunctuations = true;
+        }
         if (wordCount < n) {
             frontWordList.add(word);
         } else if (totalWords - wordCount <= n) {
@@ -114,7 +119,7 @@ void promptForFile(int& n, Vector<Queue<string> >& startOfSentencePrefixes, Map<
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map) {
+void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentencePrefixes, bool hasEndPunctuations, const Map<Queue<string>, Vector<string> >& map) {
     while (true) {
         int numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         while (numberOfWords < n) {
@@ -124,7 +129,7 @@ void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentence
             cout << "Must be at least " << n << " words." << endl;
             numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         }
-        generateRandomText(numberOfWords, n, startOfSentencePrefixes, map);
+        generateRandomText(numberOfWords, n, startOfSentencePrefixes, hasEndPunctuations, map);
     }
 }
 
@@ -134,18 +139,41 @@ void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentence
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
-void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, const Map<Queue<string>, Vector<string> >& map) {
+void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, bool hasEndPunctuations, const Map<Queue<string>, Vector<string> >& map) {
     string output = "";
-    Queue<string> randomKey = randomElement(startOfSentencePrefixes);
+    Queue<string> randomKey;
+    if (startOfSentencePrefixes.size() > 0) {
+        randomKey = randomElement(startOfSentencePrefixes);
+    } else {
+        int randomKeyIndex = randomInteger(0, map.size() - 1);
+        randomKey = map.keys()[randomKeyIndex];
+    }
     Queue<string> copyOfRandomKey = randomKey;
     while (!copyOfRandomKey.isEmpty()) {
         output += copyOfRandomKey.dequeue() + " ";
     }
+    string randomValue;
     for (int i = 0; i < numberOfWords - n; i++) {
-        string randomValue = randomElement(map[randomKey]);
+        randomValue = randomElement(map[randomKey]);
         randomKey.dequeue();
         randomKey.enqueue(randomValue);
         output += randomValue + " ";
     }
-    cout << "... " << output << "..." << endl;
+    char lastChar = randomValue[randomValue.size() - 1];
+    while (!isEndPunctuation(lastChar) && hasEndPunctuations) { // text not ended in full sentence
+        randomValue = randomElement(map[randomKey]);
+        randomKey.dequeue();
+        randomKey.enqueue(randomValue);
+        output += randomValue + " ";
+        lastChar = randomValue[randomValue.size() - 1];
+    }
+    if (hasEndPunctuations) {
+        cout << output << endl;
+    } else {
+        cout << "... " << output << "..." << endl;
+    }
+}
+
+bool isEndPunctuation(char ch) {
+    return (ch == '.' || ch == '?' || ch == '!');
 }
