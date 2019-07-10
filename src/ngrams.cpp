@@ -49,6 +49,8 @@ void printIntroduction() {
 
 /**
  * @brief Prompt user for input file and n value and construct a map of prefixes to suffixes.
+ * @param startOfSentencePrefixes prefixes that starts with a word with first letter capitalized
+ * @param hasEndPunctuations indicate if the file contains end punctuations or not
  * @param n the size of grams to use, high n means more prefixes
  * @param map the map used to store prefixes to suffixes
  */
@@ -137,6 +139,8 @@ void promptForNumberOfWords(int n, const Vector<Queue<string> >& startOfSentence
  * @brief Generate random texts based on the number of words and the map of prefixes to suffixes.
  * @param numberOfWords the number of words to generate, must be >= n
  * @param n the size of grams to use, high n means more prefixes
+ * @param startOfSentencePrefixes prefixes that starts with a word with first letter capitalized
+ * @param hasEndPunctuations indicate if the file contains end punctuations or not
  * @param map the map used to store prefixes to suffixes
  */
 void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& startOfSentencePrefixes, bool hasEndPunctuations, const Map<Queue<string>, Vector<string> >& map) {
