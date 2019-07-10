@@ -176,6 +176,11 @@ void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& 
     }
 }
 
+/**
+ * @brief isEndPunctuation Test if a character is an end puncutation.
+ * @param ch the character to test if it is an end punctuation
+ * @return true if the character is an end punctuation, false otherwise
+ */
 bool isEndPunctuation(char ch) {
     return (ch == '.' || ch == '?' || ch == '!');
 }
