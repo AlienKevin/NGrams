@@ -167,8 +167,10 @@ void generateRandomText(int numberOfWords, int n, const Vector<Queue<string> >& 
         output += randomValue + " ";
         lastChar = randomValue[randomValue.size() - 1];
     }
-    if (hasEndPunctuations) {
+    if (hasEndPunctuations && startOfSentencePrefixes.size() > 0) {
         cout << output << endl;
+    } else if (startOfSentencePrefixes.size() > 0){
+        cout << output << "..." << endl;
     } else {
         cout << "... " << output << "..." << endl;
     }
