@@ -95,7 +95,7 @@ void promptForNumberOfWords(int n, const Map<Queue<string>, Vector<string> >& ma
             if (numberOfWords == 0) { // quit
                 return;
             }
-            cout << "N must be " << n << " or greater." << endl;
+            cout << "Must be at least " << n << " words." << endl;
             numberOfWords = getInteger("\n# of random words to generate (0 to quit)? ");
         }
         generateRandomText(numberOfWords, n, map);
