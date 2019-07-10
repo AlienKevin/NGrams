@@ -66,6 +66,7 @@ void promptForFile(Map<Queue<string>, Vector<string> >& map) {
         window.enqueue(word);
         wordCount ++;
     }
+    file.close();
     Vector<string> edgeWordList = backWordList + frontWordList;
     cout << edgeWordList << endl;
     for (int i = 0; i < edgeWordList.size(); i++) {
